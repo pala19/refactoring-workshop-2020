@@ -89,6 +89,12 @@ bool Controller::check_eating(int headX, int headY)
 {
   return (std::make_pair(headX, headY) == m_foodPosition);
 }
+bool Controller::check_if_lost(int headX, int headY)
+{
+  return headX < 0 or headY < 0 or
+      headX >= m_mapDimension.first or
+      headY >= m_mapDimension.second;
+}
 
 void Controller::receive(std::unique_ptr<Event> e)
 {
@@ -108,9 +114,7 @@ void Controller::receive(std::unique_ptr<Event> e)
             if (check_eating(newHead.x, newHead.y)) {
                 m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
                 m_foodPort.send(std::make_unique<EventT<FoodReq>>());
-            } else if (newHead.x < 0 or newHead.y < 0 or
-                       newHead.x >= m_mapDimension.first or
-                       newHead.y >= m_mapDimension.second) {
+            } else if (check_if_lost(newHead.x, newHead.y)) {
                 m_scorePort.send(std::make_unique<EventT<LooseInd>>());
                 lost = true;
             } else {
