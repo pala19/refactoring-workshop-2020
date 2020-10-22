@@ -72,6 +72,19 @@ int Controller::newY(int coord)
 {
   return coord + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
 }
+bool Controller::check_segments(int headX, int headY)
+{
+  bool lost = false;
+  for (auto segment : m_segments) {
+      if (segment.x == headX and segment.y == headY) {
+          m_scorePort.send(std::make_unique<EventT<LooseInd>>());
+          lost = true;
+          break;
+      }
+    }
+  return lost;
+}
+
 
 void Controller::receive(std::unique_ptr<Event> e)
 {
@@ -85,15 +98,7 @@ void Controller::receive(std::unique_ptr<Event> e)
         newHead.y = newY(currentHead.y);
         newHead.ttl = currentHead.ttl;
 
-        bool lost = false;
-
-        for (auto segment : m_segments) {
-            if (segment.x == newHead.x and segment.y == newHead.y) {
-                m_scorePort.send(std::make_unique<EventT<LooseInd>>());
-                lost = true;
-                break;
-            }
-        }
+        bool lost = check_segments(newHead.x, newHead.y);
 
         if (not lost) {
             if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
