@@ -29,6 +29,9 @@ public:
     Controller(Controller const& p_rhs) = delete;
     Controller& operator=(Controller const& p_rhs) = delete;
 
+
+    int newX(int coord);
+    int newY(int coord);
     void receive(std::unique_ptr<Event> e) override;
 
 private:

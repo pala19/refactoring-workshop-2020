@@ -64,6 +64,14 @@ Controller::Controller(IPort& p_displayPort, IPort& p_foodPort, IPort& p_scorePo
         throw ConfigurationError();
     }
 }
+int Controller::newX(int coord)
+{
+  return coord + ((m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+}
+int Controller::newY(int coord)
+{
+  return coord + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+}
 
 void Controller::receive(std::unique_ptr<Event> e)
 {
@@ -73,8 +81,8 @@ void Controller::receive(std::unique_ptr<Event> e)
         Segment const& currentHead = m_segments.front();
 
         Segment newHead;
-        newHead.x = currentHead.x + ((m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
-        newHead.y = currentHead.y + (not (m_currentDirection & 0b01) ? (m_currentDirection & 0b10) ? 1 : -1 : 0);
+        newHead.x = newX(currentHead.x);
+        newHead.y = newY(currentHead.y);
         newHead.ttl = currentHead.ttl;
 
         bool lost = false;
