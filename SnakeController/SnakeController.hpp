@@ -33,6 +33,7 @@ public:
     int newX(int coord);
     int newY(int coord);
     bool check_segments(int headX, int headY);
+    bool check_eating(int headX, int headY);
     void receive(std::unique_ptr<Event> e) override;
 
 private:

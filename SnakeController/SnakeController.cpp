@@ -85,6 +85,10 @@ bool Controller::check_segments(int headX, int headY)
   return lost;
 }
 
+bool Controller::check_eating(int headX, int headY)
+{
+  return (std::make_pair(headX, headY) == m_foodPosition);
+}
 
 void Controller::receive(std::unique_ptr<Event> e)
 {
@@ -101,7 +105,7 @@ void Controller::receive(std::unique_ptr<Event> e)
         bool lost = check_segments(newHead.x, newHead.y);
 
         if (not lost) {
-            if (std::make_pair(newHead.x, newHead.y) == m_foodPosition) {
+            if (check_eating(newHead.x, newHead.y)) {
                 m_scorePort.send(std::make_unique<EventT<ScoreInd>>());
                 m_foodPort.send(std::make_unique<EventT<FoodReq>>());
             } else if (newHead.x < 0 or newHead.y < 0 or
